@@ -1,10 +1,12 @@
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 #include "zenoh-pico/system/platform.h"
 
 extern uint32_t ZenohUser_GetRandomU32(void);
+extern void *ZenohUser_Malloc(size_t size);
+extern void *ZenohUser_Realloc(void *ptr, size_t size);
+extern void ZenohUser_Free(void *ptr);
 
 /*------------------ Random ------------------*/
 uint8_t z_random_u8(void) { return (uint8_t)z_random_u32(); }
@@ -28,10 +30,8 @@ void z_random_fill(void *buf, size_t len) {
 }
 
 /*------------------ Memory ------------------*/
-/* TODO custom static memory allocator */
+void *z_malloc(size_t size) { return ZenohUser_Malloc(size); }
 
-void *z_malloc(size_t size) { return malloc(size); }
+void *z_realloc(void *ptr, size_t size) { return ZenohUser_Realloc(ptr, size); }
 
-void *z_realloc(void *ptr, size_t size) { return realloc(ptr, size); }
-
-void z_free(void *ptr) { free(ptr); }
+void z_free(void *ptr) { ZenohUser_Free(ptr); }
