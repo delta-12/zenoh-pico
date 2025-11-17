@@ -8,8 +8,13 @@
 extern z_result_t ZenohUser_OpenSerialFromDevice(_z_sys_net_socket_t *socket, const char *const device,
                                                  const uint32_t baudrate);
 extern void ZenohUser_CloseSerial(_z_sys_net_socket_t *socket);
+extern size_t ZenohUser_ReadSerial(const _z_sys_net_socket_t *const socket, uint8_t *const data, const size_t size);
 extern size_t ZenohUser_SendSerial(const _z_sys_net_socket_t *const socket, const uint8_t *const data,
                                    const size_t size);
+
+static uint8_t recv_tmp_buf[_Z_SERIAL_MFS_SIZE];
+static uint8_t recv_raw_buf[_Z_SERIAL_MAX_COBS_BUF_SIZE];
+static size_t recv_tmp_buf_pos = 0U;
 
 void _z_socket_close(_z_sys_net_socket_t *sock) { _ZP_UNUSED(sock); }
 
@@ -52,20 +57,27 @@ z_result_t _z_listen_serial_from_dev(_z_sys_net_socket_t *sock, char *dev, uint3
 void _z_close_serial(_z_sys_net_socket_t *sock) { ZenohUser_CloseSerial(sock); }
 
 size_t _z_read_serial_internal(const _z_sys_net_socket_t sock, uint8_t *header, uint8_t *ptr, size_t len) {
-    _ZP_UNUSED(sock);
-    _ZP_UNUSED(header);
-    _ZP_UNUSED(ptr);
-    _ZP_UNUSED(len);
+    size_t ret = SIZE_MAX;
 
-    /* TODO */
+    while (recv_tmp_buf_pos < _Z_SERIAL_MAX_COBS_BUF_SIZE) {
+        size_t r = ZenohUser_ReadSerial(&sock, &recv_raw_buf[recv_tmp_buf_pos], 1);
+        recv_tmp_buf_pos += r;
+        if (0U == r) {
+            // break;
+        } else if ((uint8_t)0x00 == recv_raw_buf[recv_tmp_buf_pos - 1]) {
+            ret = _z_serial_msg_deserialize(recv_raw_buf, recv_tmp_buf_pos, ptr, len, header, recv_tmp_buf,
+                                            _Z_SERIAL_MFS_SIZE);
+            recv_tmp_buf_pos = 0U;
+            break;
+        }
+    }
 
-    _Z_ERROR_LOG(_Z_ERR_GENERIC);
-
-    return SIZE_MAX;
+    return ret;
 }
 
 size_t _z_send_serial_internal(const _z_sys_net_socket_t sock, uint8_t header, const uint8_t *ptr, size_t len) {
     size_t ret = SIZE_MAX;
+    /* TODO optional static allocation (can use sock to get buffers if they exist, i.e. not NULL) */
     uint8_t *tmp_buf = (uint8_t *)z_malloc(_Z_SERIAL_MFS_SIZE);
     uint8_t *raw_buf = (uint8_t *)z_malloc(_Z_SERIAL_MAX_COBS_BUF_SIZE);
 
