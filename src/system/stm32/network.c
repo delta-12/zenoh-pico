@@ -11,11 +11,13 @@ extern void ZenohUser_CloseSerial(_z_sys_net_socket_t *socket);
 extern size_t ZenohUser_SendSerial(const _z_sys_net_socket_t *const socket, const uint8_t *const data,
                                    const size_t size);
 
+void _z_socket_close(_z_sys_net_socket_t *sock) { _ZP_UNUSED(sock); }
+
 z_result_t _z_open_serial_from_pins(_z_sys_net_socket_t *sock, uint32_t txpin, uint32_t rxpin, uint32_t baudrate) {
-    (void)(sock);
-    (void)(txpin);
-    (void)(rxpin);
-    (void)(baudrate);
+    _ZP_UNUSED(sock);
+    _ZP_UNUSED(txpin);
+    _ZP_UNUSED(rxpin);
+    _ZP_UNUSED(baudrate);
 
     _Z_ERROR_LOG(_Z_ERR_GENERIC);
 
@@ -27,10 +29,10 @@ z_result_t _z_open_serial_from_dev(_z_sys_net_socket_t *sock, char *dev, uint32_
 }
 
 z_result_t _z_listen_serial_from_pins(_z_sys_net_socket_t *sock, uint32_t txpin, uint32_t rxpin, uint32_t baudrate) {
-    (void)(sock);
-    (void)(txpin);
-    (void)(rxpin);
-    (void)(baudrate);
+    _ZP_UNUSED(sock);
+    _ZP_UNUSED(txpin);
+    _ZP_UNUSED(rxpin);
+    _ZP_UNUSED(baudrate);
 
     _Z_ERROR_LOG(_Z_ERR_GENERIC);
 
@@ -38,9 +40,9 @@ z_result_t _z_listen_serial_from_pins(_z_sys_net_socket_t *sock, uint32_t txpin,
 }
 
 z_result_t _z_listen_serial_from_dev(_z_sys_net_socket_t *sock, char *dev, uint32_t baudrate) {
-    (void)(sock);
-    (void)(dev);
-    (void)(baudrate);
+    _ZP_UNUSED(sock);
+    _ZP_UNUSED(dev);
+    _ZP_UNUSED(baudrate);
 
     _Z_ERROR_LOG(_Z_ERR_GENERIC);
 
@@ -50,10 +52,10 @@ z_result_t _z_listen_serial_from_dev(_z_sys_net_socket_t *sock, char *dev, uint3
 void _z_close_serial(_z_sys_net_socket_t *sock) { ZenohUser_CloseSerial(sock); }
 
 size_t _z_read_serial_internal(const _z_sys_net_socket_t sock, uint8_t *header, uint8_t *ptr, size_t len) {
-    (void)(sock);
-    (void)(header);
-    (void)(ptr);
-    (void)(len);
+    _ZP_UNUSED(sock);
+    _ZP_UNUSED(header);
+    _ZP_UNUSED(ptr);
+    _ZP_UNUSED(len);
 
     /* TODO */
 
@@ -70,8 +72,8 @@ size_t _z_send_serial_internal(const _z_sys_net_socket_t sock, uint8_t header, c
     if ((NULL == raw_buf) || (NULL == tmp_buf)) {
         _Z_ERROR("Failed to allocate serial COBS and/or MFS buffer");
     } else {
-        size_t ret = _z_serial_msg_serialize(raw_buf, _Z_SERIAL_MAX_COBS_BUF_SIZE, ptr, len, header, tmp_buf,
-                                             _Z_SERIAL_MFS_SIZE);
+        ret = _z_serial_msg_serialize(raw_buf, _Z_SERIAL_MAX_COBS_BUF_SIZE, ptr, len, header, tmp_buf,
+                                      _Z_SERIAL_MFS_SIZE);
 
         if (SIZE_MAX == ret) {
         } else if (ret == ZenohUser_SendSerial(&sock, raw_buf, ret)) {
