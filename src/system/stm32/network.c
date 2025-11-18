@@ -12,6 +12,7 @@ extern size_t ZenohUser_ReadSerial(const _z_sys_net_socket_t *const socket, uint
 extern size_t ZenohUser_SendSerial(const _z_sys_net_socket_t *const socket, const uint8_t *const data,
                                    const size_t size);
 
+/* TODO move static buffers to socket? */
 static uint8_t recv_tmp_buf[_Z_SERIAL_MFS_SIZE];
 static uint8_t recv_raw_buf[_Z_SERIAL_MAX_COBS_BUF_SIZE];
 static size_t recv_tmp_buf_pos = 0U;
@@ -63,6 +64,7 @@ size_t _z_read_serial_internal(const _z_sys_net_socket_t sock, uint8_t *header, 
         size_t r = ZenohUser_ReadSerial(&sock, &recv_raw_buf[recv_tmp_buf_pos], 1);
         recv_tmp_buf_pos += r;
         if (0U == r) {
+            /* TODO uncomment to make non-blocking after testing */
             // break;
         } else if ((uint8_t)0x00 == recv_raw_buf[recv_tmp_buf_pos - 1]) {
             ret = _z_serial_msg_deserialize(recv_raw_buf, recv_tmp_buf_pos, ptr, len, header, recv_tmp_buf,
