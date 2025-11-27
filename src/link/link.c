@@ -131,6 +131,11 @@ z_result_t _z_listen_link(_z_link_t *zl, const _z_string_t *locator, const _z_co
             ret = _z_new_link_bt(zl, ep);
         } else
 #endif
+#if Z_FEATURE_LINK_SERIAL == 1
+            if (_z_endpoint_serial_valid(&ep) == _Z_RES_OK) {
+            ret = _z_new_link_serial(zl, ep);
+        } else
+#endif
             if (_z_endpoint_raweth_valid(&ep) == _Z_RES_OK) {
             ret = _z_new_link_raweth(zl, ep);
         } else {

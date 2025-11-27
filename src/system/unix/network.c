@@ -897,13 +897,7 @@ z_result_t _z_listen_serial_from_pins(_z_sys_net_socket_t *sock, uint32_t txpin,
 }
 
 z_result_t _z_listen_serial_from_dev(_z_sys_net_socket_t *sock, char *dev, uint32_t baudrate) {
-    _ZP_UNUSED(sock);
-    _ZP_UNUSED(dev);
-    _ZP_UNUSED(baudrate);
-
-    _Z_ERROR_LOG(_Z_ERR_GENERIC);
-
-    return _Z_ERR_GENERIC;
+    return ZenohUser_OpenSerialFromDevice(sock, dev, baudrate);
 }
 
 void _z_close_serial(_z_sys_net_socket_t *sock) { ZenohUser_CloseSerial(sock); }

@@ -45,6 +45,8 @@ typedef struct {
 #if Z_FEATURE_LINK_TCP == 1 || Z_FEATURE_LINK_UDP_MULTICAST == 1 || Z_FEATURE_LINK_UDP_UNICAST == 1 || \
     Z_FEATURE_RAWETH_TRANSPORT == 1
         int _fd;
+#else
+        int _fd;
 #endif
     };
 #if Z_FEATURE_LINK_TLS == 1
@@ -59,6 +61,8 @@ typedef struct {
     union {
 #if Z_FEATURE_LINK_TCP == 1 || Z_FEATURE_LINK_UDP_MULTICAST == 1 || Z_FEATURE_LINK_UDP_UNICAST == 1
         struct addrinfo *_iptcp;
+#else
+        void *_endpoint_unused;
 #endif
     };
 } _z_sys_net_endpoint_t;
